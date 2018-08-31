@@ -1,5 +1,14 @@
 import React, { Component } from 'react';
-import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
+import { Button, 
+  Modal, 
+  ModalHeader, 
+  ModalBody, 
+  ModalFooter,
+  FormGroup,
+  Label,
+  Form,
+  Input 
+} from 'reactstrap';
 
 class SignUp extends Component {
   render(props) {
@@ -8,11 +17,28 @@ class SignUp extends Component {
         <Modal isOpen={true}>
           <ModalHeader>Create an Account</ModalHeader>
           <ModalBody>
-            TODO: Create form
+            <Form>
+              <FormGroup>
+                <Label for='firstName'>First Name</Label>
+                <Input type='text' name='firstName' />
+              </FormGroup>
+              <FormGroup>
+                <Label for='username'>Username</Label>
+                <Input type='text' name='username' />
+              </FormGroup>
+              <FormGroup>
+                <Label for='email'>E-Mail</Label>
+                <Input type='email' name='email' />
+              </FormGroup>
+              <FormGroup>
+                <Label for='password'>Password</Label>
+                <Input type='password' name='password' />
+              </FormGroup>
+            </Form>
           </ModalBody>
           <ModalFooter>
-            <Button color="primary" onClick={'TODO'}>Register</Button>{' '}
-            <Button color="secondary" onClick={() => { this.props.toggle('signup') }}>Cancel</Button>
+            <Button color='primary' onClick={'TODO'}>Register</Button>{' '}
+            <Button color='secondary' onClick={() => { this.props.toggle('signup') }}>Cancel</Button>
           </ModalFooter>
         </Modal>
       </div>
