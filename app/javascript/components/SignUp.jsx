@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 
-class Signup extends Component {
+class SignUp extends Component {
   render(props) {
     return (
       <div>
@@ -20,4 +20,4 @@ class Signup extends Component {
   }
 };
 
-export default Signup;
+export default SignUp;
