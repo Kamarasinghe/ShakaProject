@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux'; // Connects component to Redux
 import { Navbar, NavbarBrand, Nav, NavItem, NavLink } from 'reactstrap';
-import Signup from './Signup';
+import SignUp from './SignUp';
 import SignIn from './SignIn';
 
 // Used to grab what you need from the store and pass to component
@@ -12,7 +12,7 @@ const mapStateToProps = (state) => {
   };
 };
 
-class App extends Component {
+export class App extends Component {
   constructor() {
     super();
     this.state = {
@@ -43,19 +43,18 @@ class App extends Component {
           <NavbarBrand href='/'>ShakaProject</NavbarBrand>
             <Nav className='ml-auto' navbar>
               <NavItem>
-                <NavLink onClick={() => { this.toggleModal('signup') }}>Sign Up</NavLink>
+                <NavLink className='signUp' onClick={() => { this.toggleModal('signup') }}>Sign Up</NavLink>
               </NavItem>
               <NavItem>
-                <NavLink onClick={() => { this.toggleModal('signin') }}>Sign In</NavLink>
+                <NavLink className='signIn' onClick={() => { this.toggleModal('signin') }}>Sign In</NavLink>
               </NavItem>
             </Nav>
         </Navbar>
-        {this.state.signup ? (<Signup toggle={this.toggleModal} />) : <div></div>}
+        {this.state.signup ? (<SignUp toggle={this.toggleModal} />) : <div></div>}
         {this.state.signin ? (<SignIn toggle={this.toggleModal} />) : <div></div>}
       </div>
     );
   }
 };
 
-App = connect(mapStateToProps)(App);
-export default App;
+export default connect(mapStateToProps)(App);
