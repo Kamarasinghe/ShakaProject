@@ -3,6 +3,9 @@ import { connect } from 'react-redux'; // Connects component to Redux
 import { Navbar, NavbarBrand, Nav, NavItem, NavLink } from 'reactstrap';
 import SignUp from './SignUp';
 import SignIn from './SignIn';
+import Messages from './Messages';
+
+import { usersAndMessages } from '../../../sampledata';
 
 // Used to grab what you need from the store and pass to component
 const mapStateToProps = (state) => {
@@ -52,6 +55,7 @@ export class App extends Component {
         </Navbar>
         {this.state.signup ? (<SignUp toggle={this.toggleModal} />) : <div></div>}
         {this.state.signin ? (<SignIn toggle={this.toggleModal} />) : <div></div>}
+        <Messages sampleData={usersAndMessages} />
       </div>
     );
   }
