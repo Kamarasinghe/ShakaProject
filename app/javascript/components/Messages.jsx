@@ -7,17 +7,15 @@ class Messages extends Component {
       <Container>
         <Row>
           <Col>First Name</Col>
-          <Col>Last Name</Col>
+          <Col>Username</Col>
           <Col>Message</Col>
-          <Col>Sent At</Col>
         </Row>
-        {this.props.sampleData.map((user) => {
+        {this.props.sampleData.map((user, idx) => {
           return (
-            <Row>
+            <Row className='userAndMessage' key={idx}>
               <Col>{user.first}</Col>
-              <Col>{user.last}</Col>
               <Col>{user.username}</Col>
-              <Col>{user.createdAt}</Col>
+              <Col>{user.message}</Col>
             </Row>
           );
         })}
