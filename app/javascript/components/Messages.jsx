@@ -1,22 +1,68 @@
 import React, { Component } from 'react';
 import { Container, Row, Col, Pagination, PaginationItem, PaginationLink } from 'reactstrap';
+import { usersAndMessages } from '../../../sampledata'
 
 class Messages extends Component {
   constructor() {
     super();
 
     this.state = {
+      allMessages: usersAndMessages,
       currentMessages: [],
       pageNum: 1
     }
 
-    this.paginationFilter = this.paginationFilter.bind(this);
     this.changePage = this.changePage.bind(this);
+    this.compareValues = this.compareValues.bind(this);
+    this.paginationFilter = this.paginationFilter.bind(this);
   }
 
   componentDidMount() {
     // Set the initial first 5 messages
     this.paginationFilter(1);
+  }
+
+  compareValues(key, order='asc') {
+    return function(a, b) {
+      if(!a.hasOwnProperty(key) || !b.hasOwnProperty(key)) {
+        // Property doesn't exist on either object
+          return 0; 
+      }
+  
+      // Turn key into uppercase if string
+      const upperCaseKeyA = (typeof a[key] === 'string') ? 
+        a[key].toUpperCase() : a[key];
+      const upperCaseKeyB = (typeof b[key] === 'string') ? 
+        b[key].toUpperCase() : b[key];
+  
+      let comparison = 0;
+      if (upperCaseKeyA > upperCaseKeyB) {
+        comparison = 1;
+      } else if (upperCaseKeyA < upperCaseKeyB) {
+        comparison = -1;
+      }
+      return (
+        (order == 'desc') ? (comparison * -1) : comparison
+      );
+    };
+  }
+
+  filter(action) {
+    let category = action[0];
+    let direction = action[1];
+    let sorted;
+    
+    if (direction === 'down') {
+      sorted = this.state.allMessages.sort(this.compareValues(category, 'desc'));
+    } else {
+      sorted = this.state.allMessages.sort(this.compareValues(category));
+    }
+
+    this.setState({
+      allMessages: sorted
+    });
+
+    this.paginationFilter(1)
   }
 
   changePage(action) {
@@ -50,13 +96,11 @@ class Messages extends Component {
   } 
 
   paginationFilter(pageNum) {
-    // Create variable for all messages passed through props
-    let allMessages = this.props.sampleData;
     // Designate how many messages to show 
     let endSlice = pageNum * 5;
     // Variable for where to begin array slice
     let beginSlice = endSlice - 5;
-    let selectedMessages = allMessages.slice(beginSlice, endSlice);
+    let selectedMessages = this.state.allMessages.slice(beginSlice, endSlice);
 
     this.setState({
       currentMessages: selectedMessages
@@ -68,9 +112,21 @@ class Messages extends Component {
       <Container>
         <div>
           <Row>
-            <Col>First Name</Col>
-            <Col>Username</Col>
-            <Col>Message</Col>
+            <Col style={{'text-align': 'center'}}>
+              First Name 
+              <i style={{fontWeight: '200'}} className='fas fa-arrow-alt-circle-up' onClick={() => { this.filter(['first', 'up']) }} />
+              <i style={{fontWeight: '200'}} className='fas fa-arrow-alt-circle-down' onClick={() => { this.filter(['first', 'down']) }} />
+            </Col>
+            <Col style={{'text-align': 'center'}}>
+              Username 
+              <i style={{fontWeight: '200'}} className='fas fa-arrow-alt-circle-up' onClick={() => { this.filter(['username', 'up']) }} />
+              <i style={{fontWeight: '200'}} className='fas fa-arrow-alt-circle-down' onClick={() => { this.filter(['username', 'down']) }} />
+            </Col>
+            <Col style={{'text-align': 'center'}}>
+              Message
+              <i style={{fontWeight: '200'}} className='fas fa-arrow-alt-circle-up' onClick={() => { this.filter(['createdAt', 'up']) }} />
+              <i style={{fontWeight: '200'}} className='fas fa-arrow-alt-circle-down' onClick={() => { this.filter(['createdAt', 'down']) }} />
+            </Col>
           </Row>
           {this.state.currentMessages.map((user, idx) => {
             return (
