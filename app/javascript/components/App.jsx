@@ -55,7 +55,7 @@ export class App extends Component {
         </Navbar>
         {this.state.signup ? (<SignUp toggle={this.toggleModal} />) : <div></div>}
         {this.state.signin ? (<SignIn toggle={this.toggleModal} />) : <div></div>}
-        <Messages sampleData={usersAndMessages} />
+        <Messages sampleData={usersAndMessages} paginationNum={Math.ceil(usersAndMessages.length / 5)}/>
       </div>
     );
   }
