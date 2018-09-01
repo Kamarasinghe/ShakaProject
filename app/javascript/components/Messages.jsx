@@ -141,14 +141,14 @@ class Messages extends Component {
         <div>
           <Pagination aria-label='messages pagination'>
             <PaginationItem>
-              <PaginationLink previous onClick={() => { this.changePage('previous')}} />
+              <PaginationLink previous onClick={() => { this.changePage('previous')}} className='previous' />
             </PaginationItem>
               {[...Array(this.props.paginationNum)].map((num, idx) => {
                 let pageNum = idx + 1;
 
                 return (
                   <div key={idx}>
-                    <PaginationItem>
+                    <PaginationItem className={`paginationPage ${pageNum}`}>
                       <PaginationLink onClick={() => { this.changePage(pageNum) }}>
                         {pageNum}
                       </PaginationLink>
@@ -157,7 +157,7 @@ class Messages extends Component {
                 );
               })}
             <PaginationItem>
-              <PaginationLink next onClick={() => { this.changePage('next')}} />
+              <PaginationLink next onClick={() => { this.changePage('next')}} className='next' />
             </PaginationItem>
           </Pagination>
         </div>
