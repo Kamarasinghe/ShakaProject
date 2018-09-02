@@ -7,7 +7,7 @@
 
 const initialState = {
   username: '',
-  password: ''
+  isAdmin: ''
 };
 
 const rootReducer = (state = initialState, action) => {
