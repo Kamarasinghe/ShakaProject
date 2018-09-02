@@ -1,14 +1,16 @@
 import React, { Component } from 'react';
+import axios from 'axios';
 import { Container, Row, Col, Pagination, PaginationItem, PaginationLink } from 'reactstrap';
-import { usersAndMessages } from '../../../sampledata'
+
 
 class Messages extends Component {
   constructor() {
     super();
 
     this.state = {
-      allMessages: usersAndMessages,
+      allMessages: [],
       currentMessages: [],
+      paginationNum: '',
       pageNum: 1
     }
 
@@ -18,12 +20,29 @@ class Messages extends Component {
   }
 
   componentDidMount() {
-    // Set the initial first 5 messages
-    this.paginationFilter(1);
+    axios.get('/messages')
+    .then((res) => {
+      let paginationNum = Math.ceil(res.data.length / 5);
+
+      this.setState({
+        allMessages: res.data,
+        paginationNum: paginationNum
+      });
+    }).then(() => {
+      // Set the initial first 5 messages
+      this.paginationFilter(1);
+    })
+
   }
 
-  compareValues(key, order='asc') {
+  compareValues(key, createdAt, order='asc') {
     return function(a, b) {
+      // Grab the user property within message 
+      if (createdAt) {
+        a = a.user;
+        b = b.user;
+      }
+
       if(!a.hasOwnProperty(key) || !b.hasOwnProperty(key)) {
         // Property doesn't exist on either object
           return 0; 
@@ -49,26 +68,27 @@ class Messages extends Component {
 
   filter(action) {
     let category = action[0];
+    let createdAt = category === 'created_at' ? false : true;
     let direction = action[1];
     let sorted;
     
     if (direction === 'down') {
-      sorted = this.state.allMessages.sort(this.compareValues(category, 'desc'));
+      sorted = this.state.allMessages.sort(this.compareValues(category, createdAt, 'desc'));
     } else {
-      sorted = this.state.allMessages.sort(this.compareValues(category));
+      sorted = this.state.allMessages.sort(this.compareValues(category, createdAt));
     }
 
     this.setState({
       allMessages: sorted
     });
 
-    this.paginationFilter(1)
+    this.paginationFilter(1);
   }
 
   changePage(action) {
     if (typeof action === 'string') {
       // Make sure the pageNum does not go more than paginationNum
-      if (action === 'next' && this.state.pageNum < this.props.paginationNum) {
+      if (action === 'next' && this.state.pageNum < this.state.paginationNum) {
         let pageNum = this.state.pageNum + 1;
         // Run paginationFilter to show correct messages
         this.paginationFilter(pageNum);
@@ -101,6 +121,7 @@ class Messages extends Component {
     // Variable for where to begin array slice
     let beginSlice = endSlice - 5;
     let selectedMessages = this.state.allMessages.slice(beginSlice, endSlice);
+    console.log(selectedMessages)
 
     this.setState({
       currentMessages: selectedMessages
@@ -112,28 +133,28 @@ class Messages extends Component {
       <Container>
         <div>
           <Row>
-            <Col style={{'text-align': 'center'}}>
+            <Col style={{'textAlign': 'center'}}>
               First Name 
               <i style={{fontWeight: '200'}} className='fas fa-arrow-alt-circle-up' onClick={() => { this.filter(['first', 'up']) }} />
               <i style={{fontWeight: '200'}} className='fas fa-arrow-alt-circle-down' onClick={() => { this.filter(['first', 'down']) }} />
             </Col>
-            <Col style={{'text-align': 'center'}}>
+            <Col style={{'textAlign': 'center'}}>
               Username 
               <i style={{fontWeight: '200'}} className='fas fa-arrow-alt-circle-up' onClick={() => { this.filter(['username', 'up']) }} />
               <i style={{fontWeight: '200'}} className='fas fa-arrow-alt-circle-down' onClick={() => { this.filter(['username', 'down']) }} />
             </Col>
-            <Col style={{'text-align': 'center'}}>
+            <Col style={{'textAlign': 'center'}}>
               Message
-              <i style={{fontWeight: '200'}} className='fas fa-arrow-alt-circle-up' onClick={() => { this.filter(['createdAt', 'up']) }} />
-              <i style={{fontWeight: '200'}} className='fas fa-arrow-alt-circle-down' onClick={() => { this.filter(['createdAt', 'down']) }} />
+              <i style={{fontWeight: '200'}} className='fas fa-arrow-alt-circle-up' onClick={() => { this.filter(['created_at', 'up']) }} />
+              <i style={{fontWeight: '200'}} className='fas fa-arrow-alt-circle-down' onClick={() => { this.filter(['created_at', 'down']) }} />
             </Col>
           </Row>
-          {this.state.currentMessages.map((user, idx) => {
+          {this.state.currentMessages.map((message, idx) => {
             return (
               <Row className='userAndMessage' key={idx}>
-                <Col>{user.first}</Col>
-                <Col>{user.username}</Col>
-                <Col>{user.message}</Col>
+                <Col>{message.user.first}</Col>
+                <Col>{message.user.username}</Col>
+                <Col>{message.message}</Col>
               </Row>
             );
           })}
@@ -143,7 +164,7 @@ class Messages extends Component {
             <PaginationItem>
               <PaginationLink previous onClick={() => { this.changePage('previous')}} className='previous' />
             </PaginationItem>
-              {[...Array(this.props.paginationNum)].map((num, idx) => {
+              {[...Array(this.state.paginationNum)].map((num, idx) => {
                 let pageNum = idx + 1;
 
                 return (
