@@ -6,13 +6,15 @@
 */
 
 const initialState = {
-  isAdmin: false
+  isAdmin: false,
 };
 
 const rootReducer = (state = initialState, action) => {
   switch (action.type) {
     case 'GET_MESSAGES': 
       return { ...state, messages: action.payload };
+    case 'SIGN_IN':
+      return { ...state, signedIn: action.payload };
     default: 
     return state;
   }

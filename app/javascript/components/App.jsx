@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import axios from 'axios';
 import { connect } from 'react-redux'; // Connects component to Redux
 import { Navbar, NavbarBrand, Nav, NavItem, NavLink } from 'reactstrap';
+import { signIn } from '../redux/actions/index'
 import SignUp from './SignUp';
 import SignIn from './SignIn';
 import Messages from './Messages';
@@ -10,7 +11,13 @@ import Messages from './Messages';
 const mapStateToProps = (state) => {
   return {
     admin: state.isAdmin,
-    username: state.username,
+    signedIn: state.signedIn,
+  };
+};
+
+const mapDispatchToProps = (dispatch) => {
+  return {
+    signIn: username => dispatch(signIn(username))
   };
 };
 
@@ -23,7 +30,7 @@ export class App extends Component {
       first: '',
       username: '',
       email: '',
-      password: ''
+      password: '',
     }
 
     this.signUp = this.signUp.bind(this);
@@ -55,7 +62,18 @@ export class App extends Component {
       username: this.state.username,
       password: this.state.password
     }).then((res) => {
-      console.log(res.data)
+      if (res.data === 'failed') {
+        alert('Invalid username or password');
+      } else {
+        this.setState({
+          first: res.data.first,
+          username: '',
+          password: ''
+        });
+
+        this.props.signIn(res.data.username);
+        this.toggleModal('signin');
+      }
     })
   }
 
@@ -83,14 +101,23 @@ export class App extends Component {
       <div>
         <Navbar color='light' light expand='md'>
           <NavbarBrand href='/'>ShakaProject</NavbarBrand>
-            <Nav className='ml-auto' navbar>
-              <NavItem>
-                <NavLink className='signUp' onClick={() => { this.toggleModal('signup') }}>Sign Up</NavLink>
-              </NavItem>
-              <NavItem>
-                <NavLink className='signIn' onClick={() => { this.toggleModal('signin') }}>Sign In</NavLink>
-              </NavItem>
-            </Nav>
+          { this.props.signedIn ? (
+              <Nav className='ml-auto' navbar>
+                <NavItem>
+                  Hello, {this.state.first}
+                </NavItem>
+              </Nav>
+            ) : (
+              <Nav className='ml-auto' navbar>
+                <NavItem>
+                  <NavLink className='signUp' onClick={() => { this.toggleModal('signup') }}>Sign Up</NavLink>
+                </NavItem>
+                <NavItem>
+                  <NavLink className='signIn' onClick={() => { this.toggleModal('signin') }}>Sign In</NavLink>
+                </NavItem>
+              </Nav>
+            )
+          }
         </Navbar>
         {this.state.signup ? (<SignUp toggle={this.toggleModal} handleChange={this.handleChange} signUp={this.signUp} />) : <div></div>}
         {this.state.signin ? (<SignIn toggle={this.toggleModal} handleChange={this.handleChange} signIn={this.signIn} />) : <div></div>}
@@ -100,4 +127,4 @@ export class App extends Component {
   }
 };
 
-export default connect(mapStateToProps)(App);
+export default connect(mapStateToProps, mapDispatchToProps)(App);
