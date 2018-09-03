@@ -27,9 +27,10 @@ export class App extends Component {
     this.state = {
       signup: false,
       signin: false,
+      admin: false,
       first: '',
-      username: '',
       email: '',
+      username: '',
       password: '',
     }
 
@@ -78,9 +79,15 @@ export class App extends Component {
   }
 
   handleChange(event) {
-    this.setState({
-      [event.target.name]: event.target.value
-    });
+    if (event.target.name === 'admin') {
+      this.setState({
+        admin: !this.state.admin
+      });
+    } else {
+      this.setState({
+        [event.target.name]: event.target.value
+      });
+    }
   }
 
   // Handles opening and closing of both sign up and sign in modals
