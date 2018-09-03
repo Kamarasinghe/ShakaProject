@@ -27,6 +27,7 @@ export class App extends Component {
     }
 
     this.signUp = this.signUp.bind(this);
+    this.signIn = this.signIn.bind(this);
     this.toggleModal = this.toggleModal.bind(this);
     this.handleChange = this.handleChange.bind(this);
   }
@@ -46,6 +47,15 @@ export class App extends Component {
       } else {
         alert('Something went wrong, please try again')
       }
+    });
+  }
+
+  signIn() {
+    axios.post('/login', { 
+      username: this.state.username,
+      password: this.state.password
+    }).then((res) => {
+      console.log(res.data)
     })
   }
 
@@ -83,7 +93,7 @@ export class App extends Component {
             </Nav>
         </Navbar>
         {this.state.signup ? (<SignUp toggle={this.toggleModal} handleChange={this.handleChange} signUp={this.signUp} />) : <div></div>}
-        {this.state.signin ? (<SignIn toggle={this.toggleModal} />) : <div></div>}
+        {this.state.signin ? (<SignIn toggle={this.toggleModal} handleChange={this.handleChange} signIn={this.signIn} />) : <div></div>}
         <Messages />
       </div>
     );
