@@ -10,7 +10,7 @@ export const getMessages = (messages) => ({
   payload: messages
 });
 
-export const signIn = (username) => ({
+export const signIn = (userInfo) => ({
   type: 'SIGN_IN',
-  payload: username
+  payload: userInfo
 });
