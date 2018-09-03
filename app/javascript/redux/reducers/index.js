@@ -14,7 +14,7 @@ const rootReducer = (state = initialState, action) => {
     case 'GET_MESSAGES': 
       return { ...state, messages: action.payload };
     case 'SIGN_IN':
-      return { ...state, signedIn: action.payload };
+      return { ...state, signedIn: action.payload.username, isAdmin: action.payload.isAdmin };
     default: 
     return state;
   }
