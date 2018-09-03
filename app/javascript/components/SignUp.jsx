@@ -37,7 +37,7 @@ class SignUp extends Component {
             </Form>
           </ModalBody>
           <ModalFooter>
-            <Button color='primary' onClick={'TODO'}>Register</Button>{' '}
+            <Button color='primary' onClick={() => { this.props.signUp() }}>Register</Button>{' '}
             <Button color='secondary' onClick={() => { this.props.toggle('signup') }}>Cancel</Button>
           </ModalFooter>
         </Modal>
