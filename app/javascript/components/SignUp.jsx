@@ -34,6 +34,12 @@ class SignUp extends Component {
                 <Label for='password'>Password</Label>
                 <Input type='password' name='password' className='password' onChange={this.props.handleChange} />
               </FormGroup>
+              <FormGroup check>
+              <Label check>
+                <Input type="checkbox" name='admin' id="checkbox2" onChange={this.props.handleChange} />
+                Admin
+              </Label>
+            </FormGroup>
             </Form>
           </ModalBody>
           <ModalFooter>
