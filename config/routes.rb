@@ -1,4 +1,5 @@
 Rails.application.routes.draw do
+  post '/login' => 'sessions#create'
   get '/users' => 'users#index'
   get '/messages' => 'message#index'
   post '/signup' => 'users#create'
