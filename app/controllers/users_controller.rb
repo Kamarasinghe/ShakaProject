@@ -14,9 +14,9 @@ class UsersController < ApplicationController
     @user = User.new(user_params)
 
     if @user.save
-      redirect_to '/'
+      render :json => 'Success'
     else 
-      redirect_to '/error'
+      render :json => 'Failed'
     end
   end
 
