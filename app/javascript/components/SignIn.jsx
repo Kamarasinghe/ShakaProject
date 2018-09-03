@@ -18,15 +18,15 @@ class SignIn extends Component {
           <ModalBody>
             <InputGroup size='lg'>
               <InputGroupAddon addonType='prepend' className='username'>Username</InputGroupAddon>
-              <Input name='username' />
+              <Input name='username' onChange={this.props.handleChange} />
             </InputGroup>
             <InputGroup size='lg'>
               <InputGroupAddon addonType='prepend' className='password'>Password</InputGroupAddon>
-              <Input name='password' />
+              <Input type='password' name='password' onChange={this.props.handleChange} />
             </InputGroup>
           </ModalBody>
           <ModalFooter>
-            <Button color='primary' className='login' onClick={'TODO'}>Log In</Button>
+            <Button color='primary' className='login' onClick={() => { this.props.signIn() }}>Log In</Button>
             <Button color='secondary' onClick={() => { this.props.toggle('login') }}>Cancel</Button>
           </ModalFooter>
         </Modal>
