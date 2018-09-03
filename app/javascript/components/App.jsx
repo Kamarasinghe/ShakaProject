@@ -19,11 +19,40 @@ export class App extends Component {
     super();
     this.state = {
       signup: false,
-      signin: false
+      signin: false,
+      first: '',
+      username: '',
+      email: '',
+      password: ''
     }
 
     this.signUp = this.signUp.bind(this);
     this.toggleModal = this.toggleModal.bind(this);
+    this.handleChange = this.handleChange.bind(this);
+  }
+
+  signUp() {
+    axios.post('/signup', { 
+      user: { 
+        first: this.state.first, 
+        username: this.state.username, 
+        email: this.state.email,
+        password: this.state.password 
+      }
+    }).then((res) => {
+      if (res.data === 'Success') {
+        this.toggleModal('signup');
+        alert('Successfully registered');
+      } else {
+        alert('Something went wrong, please try again')
+      }
+    })
+  }
+
+  handleChange(event) {
+    this.setState({
+      [event.target.name]: event.target.value
+    });
   }
 
   // Handles opening and closing of both sign up and sign in modals
@@ -37,17 +66,6 @@ export class App extends Component {
         signin: !this.state.signin
       })
     )
-  }
-
-  signUp() {
-    axios.post('/signup', { 
-      user: { 
-        first: this.state.first, 
-        username: this.state.username, 
-        email: this.state.email,
-        password: this.state.password 
-      }
-    });
   }
 
   render() {
@@ -64,7 +82,7 @@ export class App extends Component {
               </NavItem>
             </Nav>
         </Navbar>
-        {this.state.signup ? (<SignUp toggle={this.toggleModal} signUp={this.signUp} />) : <div></div>}
+        {this.state.signup ? (<SignUp toggle={this.toggleModal} handleChange={this.handleChange} signUp={this.signUp} />) : <div></div>}
         {this.state.signin ? (<SignIn toggle={this.toggleModal} />) : <div></div>}
         <Messages />
       </div>
