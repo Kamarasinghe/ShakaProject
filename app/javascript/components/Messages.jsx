@@ -1,14 +1,26 @@
 import React, { Component } from 'react';
 import axios from 'axios';
+import { connect } from 'react-redux';
 import { Container, Row, Col, Pagination, PaginationItem, PaginationLink } from 'reactstrap';
+import { getMessages } from '../redux/actions/index'
 
+const mapStateToProps = (state) => {
+  return {
+    allMessages: state.messages
+  };
+};
 
-class Messages extends Component {
+const mapDispatchToProps = (dispatch) => {
+  return {
+    getMessages: messages => dispatch(getMessages(messages))
+  };
+};
+
+export class Messages extends Component {
   constructor() {
     super();
 
     this.state = {
-      allMessages: [],
       currentMessages: [],
       paginationNum: '',
       pageNum: 1
@@ -23,9 +35,10 @@ class Messages extends Component {
     axios.get('/messages')
     .then((res) => {
       let paginationNum = Math.ceil(res.data.length / 5);
-
+      // Send messages to store
+      this.props.getMessages(res.data);
+      // Set max amount of pages
       this.setState({
-        allMessages: res.data,
         paginationNum: paginationNum
       });
     }).then(() => {
@@ -73,9 +86,9 @@ class Messages extends Component {
     let sorted;
     
     if (direction === 'down') {
-      sorted = this.state.allMessages.sort(this.compareValues(category, createdAt, 'desc'));
+      sorted = this.props.allMessages.sort(this.compareValues(category, createdAt, 'desc'));
     } else {
-      sorted = this.state.allMessages.sort(this.compareValues(category, createdAt));
+      sorted = this.props.allMessages.sort(this.compareValues(category, createdAt));
     }
 
     this.setState({
@@ -120,7 +133,7 @@ class Messages extends Component {
     let endSlice = pageNum * 5;
     // Variable for where to begin array slice
     let beginSlice = endSlice - 5;
-    let selectedMessages = this.state.allMessages.slice(beginSlice, endSlice);
+    let selectedMessages = this.props.allMessages.slice(beginSlice, endSlice);
     console.log(selectedMessages)
 
     this.setState({
@@ -187,4 +200,4 @@ class Messages extends Component {
   }
 };
 
-export default Messages;
+export default connect(mapStateToProps, mapDispatchToProps)(Messages);
