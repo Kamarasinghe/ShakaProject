@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import axios from 'axios';
 import { connect } from 'react-redux'; // Connects component to Redux
 import { Navbar, NavbarBrand, Nav, NavItem, NavLink } from 'reactstrap';
-import { signIn } from '../redux/actions/index'
+import { signIn, signOut } from '../redux/actions/index'
 import SignUp from './SignUp';
 import SignIn from './SignIn';
 import Messages from './Messages';
@@ -17,7 +17,8 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    signIn: username => dispatch(signIn(username))
+    signIn: userInfo => dispatch(signIn(userInfo)),
+    signOut: () => dispatch(signOut())
   };
 };
 
@@ -36,6 +37,7 @@ export class App extends Component {
 
     this.signUp = this.signUp.bind(this);
     this.signIn = this.signIn.bind(this);
+    this.signOut = this.signOut.bind(this);
     this.toggleModal = this.toggleModal.bind(this);
     this.handleChange = this.handleChange.bind(this);
   }
@@ -46,7 +48,8 @@ export class App extends Component {
         first: this.state.first, 
         username: this.state.username, 
         email: this.state.email,
-        password: this.state.password 
+        password: this.state.password,
+        isAdmin: this.state.admin 
       }
     }).then((res) => {
       if (res.data === 'Success') {
@@ -67,15 +70,27 @@ export class App extends Component {
         alert('Invalid username or password');
       } else {
         this.setState({
+          admin: false,
           first: res.data.first,
           username: '',
           password: ''
         });
 
-        this.props.signIn(res.data.username);
+        this.props.signIn({ username: res.data.username, isAdmin: res.data.isAdmin });
         this.toggleModal('signin');
       }
-    })
+    });
+  }
+
+  signOut() {
+    axios.delete('/logout')
+    .then((res) => {
+      this.setState({
+        first: '',
+      });
+
+      this.props.signOut();
+    });
   }
 
   handleChange(event) {
@@ -112,6 +127,9 @@ export class App extends Component {
               <Nav className='ml-auto' navbar>
                 <NavItem>
                   Hello, {this.state.first}
+                </NavItem>
+                <NavItem>
+                  <NavLink className='signOut' onClick={this.signOut}>Sign Out</NavLink>
                 </NavItem>
               </Nav>
             ) : (
