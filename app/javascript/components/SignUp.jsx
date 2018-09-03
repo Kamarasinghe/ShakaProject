@@ -20,19 +20,19 @@ class SignUp extends Component {
             <Form>
               <FormGroup>
                 <Label for='firstName'>First Name</Label>
-                <Input type='text' name='firstName' className='firstName' />
+                <Input type='text' name='first' className='firstName' onChange={this.props.handleChange} />
               </FormGroup>
               <FormGroup>
                 <Label for='username'>Username</Label>
-                <Input type='text' name='username' className='username' />
+                <Input type='text' name='username' className='username' onChange={this.props.handleChange} />
               </FormGroup>
               <FormGroup>
                 <Label for='email'>E-Mail</Label>
-                <Input type='email' name='email' className='email' />
+                <Input type='email' name='email' className='email' onChange={this.props.handleChange} />
               </FormGroup>
               <FormGroup>
                 <Label for='password'>Password</Label>
-                <Input type='password' name='password' className='password' />
+                <Input type='password' name='password' className='password' onChange={this.props.handleChange} />
               </FormGroup>
             </Form>
           </ModalBody>
