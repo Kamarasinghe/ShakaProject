@@ -7,6 +7,7 @@
 
 const initialState = {
   isAdmin: false,
+  signedIn: ''
 };
 
 const rootReducer = (state = initialState, action) => {
@@ -15,6 +16,8 @@ const rootReducer = (state = initialState, action) => {
       return { ...state, messages: action.payload };
     case 'SIGN_IN':
       return { ...state, signedIn: action.payload.username, isAdmin: action.payload.isAdmin };
+    case 'SIGN_OUT':
+      return { ...state, signedIn: '', isAdmin: false }
     default: 
     return state;
   }
