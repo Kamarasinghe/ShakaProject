@@ -84,16 +84,20 @@ export class Messages extends Component {
   }
 
   messageSubmit() {
-    axios.post('/message', { messages: { message: this.state.message, user_id: this.props.userId }})
-    .then((res) => {
-      if (res.data === 'Success') {
-        this.getMessages();
-        this.changePage(this.state.pageNum);
-        ReactDOM.findDOMNode(this.refs.messageInput).value = '';
-      } else {
-        alert('An error has occurred, are you signed in?');
-      }
-    })
+    if (this.state.message.length >= 4) {
+      axios.post('/message', { messages: { message: this.state.message, user_id: this.props.userId }})
+      .then((res) => {
+        if (res.data === 'Success') {
+          this.getMessages();
+          this.changePage(this.state.pageNum);
+          ReactDOM.findDOMNode(this.refs.messageInput).value = '';
+        } else {
+          alert('An error has occurred, are you signed in?');
+        }
+      });
+    } else {
+      alert('Requires at least 4 characters');
+    }
   }
 
   messageDelete(id) {
@@ -104,11 +108,15 @@ export class Messages extends Component {
   }
 
   messageUpdate(id) {
-    axios.patch('/message', { messageId: id, newMessage: this.state.message })
-    .then(() => {
-      this.selectMessage('');
-      this.getMessages();
-    });
+    if (this.state.message.length >= 4) {
+      axios.patch('/message', { messageId: id, newMessage: this.state.message })
+      .then(() => {
+        this.selectMessage('');
+        this.getMessages();
+      });
+    } else {
+      alert('Requires at least 4 characters');
+    }
   }
 
   selectMessage(message) {
