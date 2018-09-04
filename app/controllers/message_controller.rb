@@ -16,6 +16,11 @@ class MessageController < ApplicationController
     end
   end
 
+  def update
+    @message = Message.find_by(id: params[:messageId])
+    @message.update(message: params[:newMessage])
+  end
+
   def destroy
     @message = Message.find_by(id: params[:messageId])
     @message.destroy
