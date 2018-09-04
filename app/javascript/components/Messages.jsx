@@ -21,6 +21,7 @@ import {
 const mapStateToProps = (state) => {
   return {
     userId: state.userId,
+    isAdmin: state.isAdmin,
     signedIn: state.signedIn,
     allMessages: state.messages
   };
@@ -245,7 +246,7 @@ export class Messages extends Component {
                   <Col xs='2'>{message.user.username}</Col>
                   <Col xs='6'>{message.message}</Col>
                   <Col xs='2'>
-                    {this.props.userId === message.user.id ? (
+                    {this.props.userId === message.user.id || this.props.isAdmin ? (
                       <div>
                         <i className='far fa-edit' style={{paddingRight: '10px'}} onClick={() => { this.selectMessage(message) }} />
                         <i className='far fa-trash-alt' onClick={() => { this.messageDelete(message.id) }} />
