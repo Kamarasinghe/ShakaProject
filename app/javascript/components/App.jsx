@@ -76,7 +76,7 @@ export class App extends Component {
           password: ''
         });
 
-        this.props.signIn({ username: res.data.username, isAdmin: res.data.isAdmin });
+        this.props.signIn({ username: res.data.username, isAdmin: res.data.isAdmin, userId: res.data.id });
         this.toggleModal('signin');
       }
     });
