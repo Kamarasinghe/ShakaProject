@@ -23,7 +23,7 @@ class SelectedMessage extends Component {
               <br />
               <Form>
                 <FormGroup style={{paddingTop: '15px'}}>
-                  <Input type='text' name='message' className='editMessage' onChange={this.props.handleChange} value={this.props.message} />
+                  <Input type='text' name='message' className='editMessage' maxLength='70' onChange={this.props.handleChange} value={this.props.message} />
                 </FormGroup>
               </Form>
             </ModalBody>
