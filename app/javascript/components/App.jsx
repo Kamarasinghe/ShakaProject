@@ -122,7 +122,7 @@ export class App extends Component {
     return (
       <div>
         <Navbar color='light' light expand='md'>
-          <NavbarBrand href='/'>ShakaProject</NavbarBrand>
+          <NavbarBrand>ShakaProject</NavbarBrand>
           { this.props.signedIn ? (
               <Nav className='ml-auto' navbar>
                 <NavItem>
