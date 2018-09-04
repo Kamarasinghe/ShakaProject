@@ -125,7 +125,7 @@ export class App extends Component {
           <NavbarBrand>ShakaProject</NavbarBrand>
           { this.props.signedIn ? (
               <Nav className='ml-auto' navbar>
-                <NavItem>
+                <NavItem style={{paddingTop: '8px'}}>
                   Hello, {this.state.first}
                 </NavItem>
                 <NavItem>
