@@ -134,8 +134,7 @@ export class Messages extends Component {
     // Variable for where to begin array slice
     let beginSlice = endSlice - 5;
     let selectedMessages = this.props.allMessages.slice(beginSlice, endSlice);
-    console.log(selectedMessages)
-
+    
     this.setState({
       currentMessages: selectedMessages
     });
@@ -145,18 +144,18 @@ export class Messages extends Component {
     return (
       <Container>
         <div>
-          <Row>
-            <Col style={{'textAlign': 'center'}}>
+          <Row style={{paddingBottom: 10}}>
+            <Col xs='2' className='heading' style={{fontWeight: 'bold', fontSize: '22px'}}>
               First Name 
               <i style={{fontWeight: '200'}} className='fas fa-arrow-alt-circle-up' onClick={() => { this.filter(['first', 'up']) }} />
               <i style={{fontWeight: '200'}} className='fas fa-arrow-alt-circle-down' onClick={() => { this.filter(['first', 'down']) }} />
             </Col>
-            <Col style={{'textAlign': 'center'}}>
+            <Col xs='2' className='heading' style={{fontWeight: 'bold', fontSize: '22px'}}>
               Username 
               <i style={{fontWeight: '200'}} className='fas fa-arrow-alt-circle-up' onClick={() => { this.filter(['username', 'up']) }} />
               <i style={{fontWeight: '200'}} className='fas fa-arrow-alt-circle-down' onClick={() => { this.filter(['username', 'down']) }} />
             </Col>
-            <Col style={{'textAlign': 'center'}}>
+            <Col xs='6' className='heading' style={{fontWeight: 'bold', fontSize: '22px'}}>
               Message
               <i style={{fontWeight: '200'}} className='fas fa-arrow-alt-circle-up' onClick={() => { this.filter(['created_at', 'up']) }} />
               <i style={{fontWeight: '200'}} className='fas fa-arrow-alt-circle-down' onClick={() => { this.filter(['created_at', 'down']) }} />
@@ -164,15 +163,16 @@ export class Messages extends Component {
           </Row>
           {this.state.currentMessages.map((message, idx) => {
             return (
-              <Row className='userAndMessage' key={idx}>
-                <Col>{message.user.first}</Col>
-                <Col>{message.user.username}</Col>
-                <Col>{message.message}</Col>
+              <Row className='userAndMessage' key={idx} style={{paddingBottom: 5}}>
+                <Col xs='2'>{message.user.first}</Col>
+                <Col xs='2'>{message.user.username}</Col>
+                <Col xs='6'>{message.message}</Col>
+                <Col xs='2'></Col>
               </Row>
             );
           })}
         </div>
-        <div>
+        <div style={{paddingLeft: '700px'}}>
           <Pagination aria-label='messages pagination'>
             <PaginationItem>
               <PaginationLink previous onClick={() => { this.changePage('previous')}} className='previous' />
