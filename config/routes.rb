@@ -1,8 +1,9 @@
 Rails.application.routes.draw do
   delete '/logout' => 'sessions#destroy'
   post '/login' => 'sessions#create'
-  delete '/message' => 'message#destroy'
   post '/message' => 'message#create'
+  patch '/message' => 'message#update'
+  delete '/message' => 'message#destroy'
   get '/messages' => 'message#index'
   get '/users' => 'users#index'
   post '/signup' => 'users#create'
