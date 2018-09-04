@@ -45,7 +45,8 @@ export class Messages extends Component {
     this.changePage = this.changePage.bind(this);
     this.getMessages = this.getMessages.bind(this);
     this.handleChange = this.handleChange.bind(this);
-    this.handleSubmit = this.handleSubmit.bind(this);
+    this.messageSubmit = this.messageSubmit.bind(this);
+    this.messageDelete = this.messageDelete.bind(this);
     this.compareValues = this.compareValues.bind(this);
     this.paginationFilter = this.paginationFilter.bind(this);
   }
@@ -76,15 +77,23 @@ export class Messages extends Component {
     });
   }
 
-  handleSubmit() {
+  messageSubmit() {
     axios.post('/message', { messages: { message: this.state.message, user_id: this.props.userId }})
     .then((res) => {
       if (res.data === 'Success') {
         this.getMessages();
         this.changePage(this.state.pageNum);
+        ReactDOM.findDOMNode(this.refs.messageInput).value = '';
+      } else {
+        alert('An error has occurred, are you signed in?');
       }
-    }).then(() => {
-      ReactDOM.findDOMNode(this.refs.messageInput).value = '';
+    })
+  }
+
+  messageDelete(id) {
+    axios.delete('/message', { data: { messageId: id }})
+    .then(() => {
+      this.getMessages();
     });
   }
 
@@ -207,7 +216,16 @@ export class Messages extends Component {
                 <Col xs='2'>{message.user.first}</Col>
                 <Col xs='2'>{message.user.username}</Col>
                 <Col xs='6'>{message.message}</Col>
-                <Col xs='2'></Col>
+                <Col xs='2'>
+                  {this.props.userId === message.user.id ? (
+                    <div>
+                      <i className='far fa-edit' style={{paddingRight: '10px'}} />
+                      <i className='far fa-trash-alt'onClick={() => { this.messageDelete(message.id) }}/>
+                    </div>
+                  ) : (
+                    <div></div>
+                  )}
+                </Col>
               </Row>
             );
           })}
@@ -217,7 +235,7 @@ export class Messages extends Component {
             <InputGroup>
               <Input maxLength='70' ref='messageInput' onChange={this.handleChange} />
               <InputGroupAddon addonType='append'>
-                <InputGroupText onClick={this.handleSubmit}>Send Message</InputGroupText>
+                <InputGroupText onClick={this.messageSubmit}>Send Message</InputGroupText>
               </InputGroupAddon>
             </InputGroup>
           </Col>
