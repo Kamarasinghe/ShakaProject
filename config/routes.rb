@@ -1,6 +1,7 @@
 Rails.application.routes.draw do
   delete '/logout' => 'sessions#destroy'
   post '/login' => 'sessions#create'
+  delete '/message' => 'message#destroy'
   post '/message' => 'message#create'
   get '/messages' => 'message#index'
   get '/users' => 'users#index'
