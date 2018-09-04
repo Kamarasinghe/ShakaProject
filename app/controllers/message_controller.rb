@@ -1,5 +1,6 @@
 class MessageController < ApplicationController
-  protect_from_forgery with: :null_session
+  skip_before_action :verify_authenticity_token
+  before_action :require_user, except: [:index]
 
   def index
     @messages = Message.all.order('created_at DESC')
