@@ -1,11 +1,26 @@
 import React, { Component } from 'react';
+import ReactDOM from 'react-dom'
 import axios from 'axios';
 import { connect } from 'react-redux';
-import { Container, Row, Col, Pagination, PaginationItem, PaginationLink } from 'reactstrap';
 import { getMessages } from '../redux/actions/index'
+import { 
+  Container, 
+  Row, 
+  Col, 
+  Pagination, 
+  PaginationItem, 
+  PaginationLink,
+  InputGroupAddon,
+  InputGroupText,
+  InputGroup,
+  Input
+} from 'reactstrap';
+
 
 const mapStateToProps = (state) => {
   return {
+    userId: state.userId,
+    signedIn: state.signedIn,
     allMessages: state.messages
   };
 };
@@ -23,15 +38,23 @@ export class Messages extends Component {
     this.state = {
       currentMessages: [],
       paginationNum: '',
+      message: '',
       pageNum: 1
     }
 
     this.changePage = this.changePage.bind(this);
+    this.getMessages = this.getMessages.bind(this);
+    this.handleChange = this.handleChange.bind(this);
+    this.handleSubmit = this.handleSubmit.bind(this);
     this.compareValues = this.compareValues.bind(this);
     this.paginationFilter = this.paginationFilter.bind(this);
   }
 
   componentDidMount() {
+    this.getMessages();
+  }
+
+  getMessages() {
     axios.get('/messages')
     .then((res) => {
       let paginationNum = Math.ceil(res.data.length / 5);
@@ -44,8 +67,25 @@ export class Messages extends Component {
     }).then(() => {
       // Set the initial first 5 messages
       this.paginationFilter(1);
-    })
+    });
+  }
 
+  handleChange(e) {
+    this.setState({
+      message: e.target.value
+    });
+  }
+
+  handleSubmit() {
+    axios.post('/message', { messages: { message: this.state.message, user_id: this.props.userId }})
+    .then((res) => {
+      if (res.data === 'Success') {
+        this.getMessages();
+        this.changePage(this.state.pageNum);
+      }
+    }).then(() => {
+      ReactDOM.findDOMNode(this.refs.messageInput).value = '';
+    });
   }
 
   compareValues(key, createdAt, order='asc') {
@@ -172,29 +212,39 @@ export class Messages extends Component {
             );
           })}
         </div>
-        <div style={{paddingLeft: '700px'}}>
-          <Pagination aria-label='messages pagination'>
-            <PaginationItem>
-              <PaginationLink previous onClick={() => { this.changePage('previous')}} className='previous' />
-            </PaginationItem>
-              {[...Array(this.state.paginationNum)].map((num, idx) => {
-                let pageNum = idx + 1;
+        <Row>
+          <Col xs='6' style={{paddingTop: '5px'}}>
+            <InputGroup>
+              <Input maxLength='70' ref='messageInput' onChange={this.handleChange} />
+              <InputGroupAddon addonType='append'>
+                <InputGroupText onClick={this.handleSubmit}>Send Message</InputGroupText>
+              </InputGroupAddon>
+            </InputGroup>
+          </Col>
+          <Col xs='6' style={{paddingTop: '5px'}}>
+            <Pagination aria-label='messages pagination'>
+              <PaginationItem>
+                <PaginationLink previous onClick={() => { this.changePage('previous')}} className='previous' />
+              </PaginationItem>
+                {[...Array(this.state.paginationNum)].map((num, idx) => {
+                  let pageNum = idx + 1;
 
-                return (
-                  <div key={idx}>
-                    <PaginationItem className={`paginationPage ${pageNum}`}>
-                      <PaginationLink onClick={() => { this.changePage(pageNum) }}>
-                        {pageNum}
-                      </PaginationLink>
-                    </PaginationItem>
-                  </div>
-                );
-              })}
-            <PaginationItem>
-              <PaginationLink next onClick={() => { this.changePage('next')}} className='next' />
-            </PaginationItem>
-          </Pagination>
-        </div>
+                  return (
+                    <div key={idx}>
+                      <PaginationItem className={`paginationPage ${pageNum}`}>
+                        <PaginationLink onClick={() => { this.changePage(pageNum) }}>
+                          {pageNum}
+                        </PaginationLink>
+                      </PaginationItem>
+                    </div>
+                  );
+                })}
+              <PaginationItem>
+                <PaginationLink next onClick={() => { this.changePage('next')}} className='next' />
+              </PaginationItem>
+            </Pagination>
+          </Col>
+        </Row>
       </Container>
     );
   }
