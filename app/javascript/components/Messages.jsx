@@ -2,7 +2,8 @@ import React, { Component } from 'react';
 import ReactDOM from 'react-dom'
 import axios from 'axios';
 import { connect } from 'react-redux';
-import { getMessages } from '../redux/actions/index'
+import { getMessages } from '../redux/actions/index';
+import SelectedMessage from './SelectedMessage';
 import { 
   Container, 
   Row, 
@@ -37,6 +38,8 @@ export class Messages extends Component {
 
     this.state = {
       currentMessages: [],
+      selectMessage: false,
+      selectedMessage: {},
       paginationNum: '',
       message: '',
       pageNum: 1
@@ -45,8 +48,10 @@ export class Messages extends Component {
     this.changePage = this.changePage.bind(this);
     this.getMessages = this.getMessages.bind(this);
     this.handleChange = this.handleChange.bind(this);
+    this.selectMessage = this.selectMessage.bind(this);
     this.messageSubmit = this.messageSubmit.bind(this);
     this.messageDelete = this.messageDelete.bind(this);
+    this.messageUpdate = this.messageUpdate.bind(this);
     this.compareValues = this.compareValues.bind(this);
     this.paginationFilter = this.paginationFilter.bind(this);
   }
@@ -95,6 +100,28 @@ export class Messages extends Component {
     .then(() => {
       this.getMessages();
     });
+  }
+
+  messageUpdate(id) {
+    axios.patch('/message', { messageId: id, newMessage: this.state.message })
+    .then(() => {
+      this.selectMessage('');
+      this.getMessages();
+    });
+  }
+
+  selectMessage(message) {
+    if (message) {
+      this.setState({
+        selectMessage: true,
+        selectedMessage: message,
+        message: message.message
+      });
+    } else {
+      this.setState({
+        selectMessage: false
+      });
+    }
   }
 
   compareValues(key, createdAt, order='asc') {
@@ -191,79 +218,92 @@ export class Messages extends Component {
 
   render() {
     return (
-      <Container>
-        <div>
-          <Row style={{paddingBottom: 10}}>
-            <Col xs='2' className='heading' style={{fontWeight: 'bold', fontSize: '22px'}}>
-              First Name 
-              <i style={{fontWeight: '200'}} className='fas fa-arrow-alt-circle-up' onClick={() => { this.filter(['first', 'up']) }} />
-              <i style={{fontWeight: '200'}} className='fas fa-arrow-alt-circle-down' onClick={() => { this.filter(['first', 'down']) }} />
+      <div>
+        <Container>
+          <div>
+            <Row style={{paddingBottom: 10}}>
+              <Col xs='2' className='heading' style={{fontWeight: 'bold', fontSize: '22px'}}>
+                First Name 
+                <i style={{fontWeight: '200'}} className='fas fa-arrow-alt-circle-up' onClick={() => { this.filter(['first', 'up']) }} />
+                <i style={{fontWeight: '200'}} className='fas fa-arrow-alt-circle-down' onClick={() => { this.filter(['first', 'down']) }} />
+              </Col>
+              <Col xs='2' className='heading' style={{fontWeight: 'bold', fontSize: '22px'}}>
+                Username 
+                <i style={{fontWeight: '200'}} className='fas fa-arrow-alt-circle-up' onClick={() => { this.filter(['username', 'up']) }} />
+                <i style={{fontWeight: '200'}} className='fas fa-arrow-alt-circle-down' onClick={() => { this.filter(['username', 'down']) }} />
+              </Col>
+              <Col xs='6' className='heading' style={{fontWeight: 'bold', fontSize: '22px'}}>
+                Message
+                <i style={{fontWeight: '200'}} className='fas fa-arrow-alt-circle-up' onClick={() => { this.filter(['created_at', 'up']) }} />
+                <i style={{fontWeight: '200'}} className='fas fa-arrow-alt-circle-down' onClick={() => { this.filter(['created_at', 'down']) }} />
+              </Col>
+            </Row>
+            {this.state.currentMessages.map((message, idx) => {
+              return (
+                <Row className='userAndMessage' key={idx} style={{paddingBottom: 5}}>
+                  <Col xs='2'>{message.user.first}</Col>
+                  <Col xs='2'>{message.user.username}</Col>
+                  <Col xs='6'>{message.message}</Col>
+                  <Col xs='2'>
+                    {this.props.userId === message.user.id ? (
+                      <div>
+                        <i className='far fa-edit' style={{paddingRight: '10px'}} onClick={() => { this.selectMessage(message) }} />
+                        <i className='far fa-trash-alt' onClick={() => { this.messageDelete(message.id) }} />
+                      </div>
+                    ) : (
+                      <div></div>
+                    )}
+                  </Col>
+                </Row>
+              );
+            })}
+          </div>
+          <Row>
+            <Col xs='6' style={{paddingTop: '5px'}}>
+              <InputGroup>
+                <Input maxLength='70' ref='messageInput' onChange={this.handleChange} />
+                <InputGroupAddon addonType='append'>
+                  <InputGroupText onClick={this.messageSubmit}>Send Message</InputGroupText>
+                </InputGroupAddon>
+              </InputGroup>
             </Col>
-            <Col xs='2' className='heading' style={{fontWeight: 'bold', fontSize: '22px'}}>
-              Username 
-              <i style={{fontWeight: '200'}} className='fas fa-arrow-alt-circle-up' onClick={() => { this.filter(['username', 'up']) }} />
-              <i style={{fontWeight: '200'}} className='fas fa-arrow-alt-circle-down' onClick={() => { this.filter(['username', 'down']) }} />
-            </Col>
-            <Col xs='6' className='heading' style={{fontWeight: 'bold', fontSize: '22px'}}>
-              Message
-              <i style={{fontWeight: '200'}} className='fas fa-arrow-alt-circle-up' onClick={() => { this.filter(['created_at', 'up']) }} />
-              <i style={{fontWeight: '200'}} className='fas fa-arrow-alt-circle-down' onClick={() => { this.filter(['created_at', 'down']) }} />
+            <Col xs='6' style={{paddingTop: '5px'}}>
+              <Pagination aria-label='messages pagination'>
+                <PaginationItem>
+                  <PaginationLink previous onClick={() => { this.changePage('previous')}} className='previous' />
+                </PaginationItem>
+                  {[...Array(this.state.paginationNum)].map((num, idx) => {
+                    let pageNum = idx + 1;
+
+                    return (
+                      <div key={idx}>
+                        <PaginationItem className={`paginationPage ${pageNum}`}>
+                          <PaginationLink onClick={() => { this.changePage(pageNum) }}>
+                            {pageNum}
+                          </PaginationLink>
+                        </PaginationItem>
+                      </div>
+                    );
+                  })}
+                <PaginationItem>
+                  <PaginationLink next onClick={() => { this.changePage('next')}} className='next' />
+                </PaginationItem>
+              </Pagination>
             </Col>
           </Row>
-          {this.state.currentMessages.map((message, idx) => {
-            return (
-              <Row className='userAndMessage' key={idx} style={{paddingBottom: 5}}>
-                <Col xs='2'>{message.user.first}</Col>
-                <Col xs='2'>{message.user.username}</Col>
-                <Col xs='6'>{message.message}</Col>
-                <Col xs='2'>
-                  {this.props.userId === message.user.id ? (
-                    <div>
-                      <i className='far fa-edit' style={{paddingRight: '10px'}} />
-                      <i className='far fa-trash-alt'onClick={() => { this.messageDelete(message.id) }}/>
-                    </div>
-                  ) : (
-                    <div></div>
-                  )}
-                </Col>
-              </Row>
-            );
-          })}
+        </Container>
+        <div>
+          {this.state.selectMessage ? 
+            <SelectedMessage 
+              selectedMessage={this.state.selectedMessage}
+              message={this.state.message} 
+              toggle={this.selectMessage} 
+              handleChange={this.handleChange}
+              handleSubmit={this.messageUpdate} 
+            /> : <div></div>
+          }
         </div>
-        <Row>
-          <Col xs='6' style={{paddingTop: '5px'}}>
-            <InputGroup>
-              <Input maxLength='70' ref='messageInput' onChange={this.handleChange} />
-              <InputGroupAddon addonType='append'>
-                <InputGroupText onClick={this.messageSubmit}>Send Message</InputGroupText>
-              </InputGroupAddon>
-            </InputGroup>
-          </Col>
-          <Col xs='6' style={{paddingTop: '5px'}}>
-            <Pagination aria-label='messages pagination'>
-              <PaginationItem>
-                <PaginationLink previous onClick={() => { this.changePage('previous')}} className='previous' />
-              </PaginationItem>
-                {[...Array(this.state.paginationNum)].map((num, idx) => {
-                  let pageNum = idx + 1;
-
-                  return (
-                    <div key={idx}>
-                      <PaginationItem className={`paginationPage ${pageNum}`}>
-                        <PaginationLink onClick={() => { this.changePage(pageNum) }}>
-                          {pageNum}
-                        </PaginationLink>
-                      </PaginationItem>
-                    </div>
-                  );
-                })}
-              <PaginationItem>
-                <PaginationLink next onClick={() => { this.changePage('next')}} className='next' />
-              </PaginationItem>
-            </Pagination>
-          </Col>
-        </Row>
-      </Container>
+      </div>
     );
   }
 };
