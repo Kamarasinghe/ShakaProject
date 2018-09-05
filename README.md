@@ -1,24 +1,38 @@
 # README
+ShakaProject is a message posting app
 
-This README would normally document whatever steps are necessary to get the
-application up and running.
+It is created with a React front end 
+and a Ruby on Rails back end
 
-Things you may want to cover:
+Users sign up with their first name, 
+username, email, password and can choose 
+to be an admin
 
-* Ruby version
+Utilizes bcrypt gem to store the password
+securely
 
-* System dependencies
+Users login using only their username
+and password, both are case sensitive
 
-* Configuration
+Regular users can only edit and delete 
+their own messages
 
-* Database creation
+Admin users can edit and delete any 
+users message
 
-* Database initialization
+Only shows five messages at the time
+the rest are paginated
 
-* How to run the test suite
+Can filter messages based on first
+name, username or time message was
+created
 
-* Services (job queues, cache servers, search engines, etc.)
+This app utilizes Redux for state 
+management, Bootstrap & Reactstrap
+for a better user interface, and 
+Jest & Enzyme for testing components
 
-* Deployment instructions
+TO RUN THE APP: rails s
+FIND ON: localhost:3000
 
-* ...
+TO RUN TESTS: npm test
