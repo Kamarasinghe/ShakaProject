@@ -1,19 +1,32 @@
 import React from 'react';
-import { configure, shallow, mount } from 'enzyme';
-import Messages from '../components/Messages';
+import { configure, shallow } from 'enzyme';
+import { usersAndMessages } from '../../../sampledata';
+import { Messages } from '../components/Messages';
 
 describe ('Test the Message component', () => {
   let wrapper;
+  let instance;
+
   beforeEach(() => {
-    wrapper = shallow(<Messages paginationNum={2} />);
+    wrapper = shallow(<Messages />);
+    wrapper.setState({ paginationNum: 2 });
+    wrapper.setProps({ allMessages: usersAndMessages })
+    instance = wrapper.instance();
   });
 
   it ('should exist', () => {
     expect(wrapper.exists());
   });
 
-  it ('should have 2 pagination pages', () => {
-    expect(wrapper.find('.paginationPage').length).toBe(2);
+  it ('selectedMessage should set state', () => {
+    instance.selectMessage('Test');
+    expect(wrapper.state().selectMessage).toBe(true);
+    expect(wrapper.state().selectedMessage).toBe('Test');
+  });
+
+  it ('paginationFilter should set 5 messages to state', () => {
+    instance.paginationFilter(1);
+    expect(wrapper.state().currentMessages.length).toBe(5);
   });
 
   it ('should not decrease page num if on page one', () => {
