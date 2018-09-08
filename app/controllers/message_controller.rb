@@ -1,4 +1,8 @@
 class MessageController < ApplicationController
+  # Skip the action of verifying the token authenticity
+  # and require a user to be logged in prior to any 
+  # action besides the index action which loads the messages
+
   skip_before_action :verify_authenticity_token
   before_action :require_user, except: [:index]
 
