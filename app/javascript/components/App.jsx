@@ -15,6 +15,7 @@ const mapStateToProps = (state) => {
   };
 };
 
+// Used to 
 const mapDispatchToProps = (dispatch) => {
   return {
     signIn: userInfo => dispatch(signIn(userInfo)),
@@ -25,9 +26,12 @@ const mapDispatchToProps = (dispatch) => {
 export class App extends Component {
   constructor() {
     super();
+    // These are all stored in state so that 
+    // signIn and signUp forms can update them from 
+    // their individual component
     this.state = {
       signup: false,
-      signin: false,
+      signin: false, 
       admin: false,
       first: '',
       email: '',
@@ -42,6 +46,8 @@ export class App extends Component {
     this.handleChange = this.handleChange.bind(this);
   }
 
+  // Grabs the required information to send with post
+  // request to save information to database
   signUp() {
     axios.post('/signup', { 
       user: { 
@@ -61,14 +67,24 @@ export class App extends Component {
     });
   }
 
+  // Send the login information via post request
   signIn() {
     axios.post('/login', { 
       username: this.state.username,
       password: this.state.password
     }).then((res) => {
+      // If the response is 'failed', then 
+      // alert the user. I chose to user alert
+      // so that the user is aware that they
+      // were not able to log in
       if (res.data === 'failed') {
         alert('Invalid username or password');
       } else {
+      // If successfully signed in, I need to 
+      // set the state with first name for the
+      // nav bar greeting and set the admin,
+      // username, and password back to a 
+      // neutral state
         this.setState({
           admin: false,
           first: res.data.first,
@@ -76,12 +92,16 @@ export class App extends Component {
           password: ''
         });
 
+        // Send username, isAdmin, and userId information to the redux store
+        // and then close the signIn modal
         this.props.signIn({ username: res.data.username, isAdmin: res.data.isAdmin, userId: res.data.id });
         this.toggleModal('signin');
       }
     });
   }
 
+  // Send a delete request that destroys the user session
+  // and set firstName to neutral state
   signOut() {
     axios.delete('/logout')
     .then((res) => {
@@ -89,10 +109,14 @@ export class App extends Component {
         first: '',
       });
 
+      // Call the redux action to sign user out
       this.props.signOut();
     });
   }
 
+  // If the event name is 'admin' set state true or
+  // false for the signup toggle, else update the
+  // corresponding state name with value
   handleChange(event) {
     if (event.target.name === 'admin') {
       this.setState({
@@ -118,6 +142,8 @@ export class App extends Component {
     )
   }
 
+  // If there is no user signed in, show the sign in and sign up buttons
+  // If there is a user signed in, then greet them with their first name
   render() {
     return (
       <div>
@@ -153,3 +179,10 @@ export class App extends Component {
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(App);
+
+/*
+  I chose to use modals here because I believe it makes for a better user experience
+  if the user isn't redirected from page to page. The state stored in this component are 
+  all changed according to user input whereas the Redux store is used to set persistant
+  data such as username and if their admin.
+*/
