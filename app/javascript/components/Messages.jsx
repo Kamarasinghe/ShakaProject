@@ -57,10 +57,18 @@ export class Messages extends Component {
     this.paginationFilter = this.paginationFilter.bind(this);
   }
 
+  // Invoke the function that gets the messages  
+  // from the database when the component mounts
   componentDidMount() {
     this.getMessages();
   }
 
+  // Makes the getRequest to /messages and sets
+  // state of paginationNum(the maximum amount 
+  // of pages), sends the messages to the store
+  // for easy access in other components, and also
+  // sets the first 5 messages to show using the
+  // paginationFilter function 
   getMessages() {
     axios.get('/messages')
     .then((res) => {
@@ -83,6 +91,16 @@ export class Messages extends Component {
     });
   }
 
+  // Verifies that the messages is at least 4
+  // characters. If successfully submitted, then
+  // runs getMessages function to retrieve newest
+  // message, changes the page back to where user
+  // was previously and deletes the user input
+  // from the messageInput box.  If not successful
+  // shows user error message to make sure they are
+  // logged in which is the likely cause the message
+  // did not get saved to database. Alerts the user
+  // if the message is not at least 4 characters.
   messageSubmit() {
     if (this.state.message.length >= 4) {
       axios.post('/message', { messages: { message: this.state.message, user_id: this.props.userId }})
@@ -100,6 +118,8 @@ export class Messages extends Component {
     }
   }
 
+  // Handles the deleting of a message by sending
+  // the message id with the delete request to /message
   messageDelete(id) {
     axios.delete('/message', { data: { messageId: id }})
     .then(() => {
@@ -107,6 +127,11 @@ export class Messages extends Component {
     });
   }
 
+  // Updates a previously inputted message using a 
+  // patch request to /message. Sends message id
+  // and the new message along with the request. In
+  // order to submit, the message must be at least
+  // 4 characters.
   messageUpdate(id) {
     if (this.state.message.length >= 4) {
       axios.patch('/message', { messageId: id, newMessage: this.state.message })
@@ -119,6 +144,9 @@ export class Messages extends Component {
     }
   }
 
+  // If a message is sent via argument: opens the modal to edit message, 
+  // sets the selected message in state for access in Selected Message
+  // component. If no message selected, closes the modal.
   selectMessage(message) {
     if (message) {
       this.setState({
@@ -133,6 +161,10 @@ export class Messages extends Component {
     }
   }
 
+  // compareFunction passed into the sort method
+  // Assigns value, 0, 1, or -1, when comparing
+  // two properties. If descending order, then 
+  // multiply the 'score' by -1 
   compareValues(key, createdAt, order='asc') {
     return function(a, b) {
       // Grab the user property within message 
@@ -164,6 +196,11 @@ export class Messages extends Component {
     };
   }
 
+  // Takes in an array that has which category to filter
+  // and which direction to sort in. Invoke the sort method
+  // with the compareValues function to sort the messages. Set
+  // allMessages to the newly sorted and run the paginationFilter
+  // with the first page passed in.
   filter(action) {
     let category = action[0];
     let createdAt = category === 'created_at' ? false : true;
@@ -213,6 +250,8 @@ export class Messages extends Component {
     }
   } 
 
+  // Sets the currentMessages state which are the 
+  // messages that are going to be displayed 
   paginationFilter(pageNum) {
     // Designate how many messages to show 
     let endSlice = pageNum * 5;
@@ -225,6 +264,12 @@ export class Messages extends Component {
     });
   }
 
+  // Map through the current messages and display the first name, username, and the message
+  // Incorporate conditional rendering so that the current user can edit/delete their own message
+  // or if they are admin, can edit/delete any users message
+  // Create an array the length of the paginationNum and map through to create each individual
+  // pagination number
+  // Conditional renders the SelectedMessage component depending on the value of selectMessage
   render() {
     return (
       <div>
